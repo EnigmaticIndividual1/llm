@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Projects Hub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-card hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Repositorio de entrega</p>
+          <h1>LLM Projects Hub</h1>
+          <p class="lede">
+            Este repositorio agrupa tres proyectos construidos con OpenAI API y modo demo local.
+          </p>
+        </div>
+        <div class="status-panel">
+          <span class="status-label">Modo actual</span>
+          <strong class="status-value">
+            {% if demo_mode %}Demo local{% else %}OpenAI API{% endif %}
+          </strong>
+          <p class="status-detail">
+            {% if demo_mode %}
+              La app funciona sin llave y permite revisar todos los flujos.
+            {% else %}
+              Modelo configurado: {{ model_name }}
+            {% endif %}
+          </p>
+        </div>
+      </section>
+
+      <section class="cards-grid">
+        {% for project in projects %}
+          <article class="project-card">
+            <p class="eyebrow">{{ project.title }}</p>
+            <h2>{{ project.subtitle }}</h2>
+            <p>{{ project.description }}</p>
+            <a class="card-link" href="{{ url_for(project.endpoint) }}">Abrir proyecto</a>
+          </article>
+        {% endfor %}
+      </section>
+    </main>
+  </body>
+</html>

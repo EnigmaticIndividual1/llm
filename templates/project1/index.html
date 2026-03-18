@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyecto 1 · Asistente de escritura</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="top-nav">
+        <a href="{{ url_for('home') }}">Inicio</a>
+        <a class="active" href="{{ url_for('project1.index') }}">Proyecto 1</a>
+        <a href="{{ url_for('project2.index') }}">Proyecto 2</a>
+        <a href="{{ url_for('project3.index') }}">Proyecto 3</a>
+      </nav>
+
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Proyecto 1</p>
+          <h1>Asistente de escritura automatica</h1>
+          <p class="lede">Genera borradores, mejora estilo, corrige errores y resume contenido.</p>
+        </div>
+        <div class="status-panel">
+          <span class="status-label">Modo actual</span>
+          <strong class="status-value">{% if demo_mode %}Demo local{% else %}OpenAI API{% endif %}</strong>
+          <p class="status-detail">{% if demo_mode %}Respuestas simuladas para demostracion.{% else %}Modelo: {{ model_name }}{% endif %}</p>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form method="post" class="editor-card">
+          <div class="grid two-columns">
+            <label>
+              <span>Tarea</span>
+              <select name="task">
+                {% for task_key, task_label in task_labels.items() %}
+                  <option value="{{ task_key }}" {% if form_data.task == task_key %}selected{% endif %}>{{ task_label }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>
+              <span>Tono</span>
+              <select name="tone">
+                {% for tone in ["professional", "friendly", "persuasive", "academic"] %}
+                  <option value="{{ tone }}" {% if form_data.tone == tone %}selected{% endif %}>{{ tone }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+
+          <div class="grid two-columns">
+            <label>
+              <span>Audiencia</span>
+              <input type="text" name="audience" value="{{ form_data.audience }}" placeholder="ej. clientes nuevos, estudiantes, equipo interno" />
+            </label>
+            <label>
+              <span>Longitud deseada</span>
+              <select name="target_length">
+                {% for length in ["corta", "media", "larga"] %}
+                  <option value="{{ length }}" {% if form_data.target_length == length %}selected{% endif %}>{{ length }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+
+          <label>
+            <span>Descripcion del encargo</span>
+            <textarea name="brief" rows="4" placeholder="Ej. Redacta un correo para proponer una reunion con un cliente.">{{ form_data.brief }}</textarea>
+          </label>
+
+          <label>
+            <span>Texto original</span>
+            <textarea name="source_text" rows="10" placeholder="Pega aqui el texto que quieres mejorar, corregir o resumir.">{{ form_data.source_text }}</textarea>
+          </label>
+
+          <button type="submit">Procesar texto</button>
+          {% if error %}<p class="feedback error">{{ error }}</p>{% endif %}
+        </form>
+
+        <aside class="result-card">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">Salida</p>
+              <h2>{% if result %}{{ result.task_label }}{% else %}Resultado listo para mostrar{% endif %}</h2>
+            </div>
+            {% if result %}<span class="mode-pill">{{ result.mode }}</span>{% endif %}
+          </div>
+
+          {% if result %}
+            <pre>{{ result.content }}</pre>
+          {% else %}
+            <div class="empty-state">
+              <p>Escenarios sugeridos:</p>
+              <ul>
+                <li>Correo de seguimiento para un cliente potencial.</li>
+                <li>Mejora de un texto academico.</li>
+                <li>Correccion de un mensaje con errores.</li>
+                <li>Resumen de notas de clase.</li>
+              </ul>
+            </div>
+          {% endif %}
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>

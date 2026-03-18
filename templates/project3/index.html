@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proyecto 3 · Atencion al cliente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <nav class="top-nav">
+        <a href="{{ url_for('home') }}">Inicio</a>
+        <a href="{{ url_for('project1.index') }}">Proyecto 1</a>
+        <a href="{{ url_for('project2.index') }}">Proyecto 2</a>
+        <a class="active" href="{{ url_for('project3.index') }}">Proyecto 3</a>
+      </nav>
+
+      <section class="hero-card">
+        <div class="hero-copy">
+          <p class="eyebrow">Proyecto 3</p>
+          <h1>Sistema de atencion al cliente automatizado</h1>
+          <p class="lede">Genera respuestas de soporte con tono profesional y simulacion de consulta interna.</p>
+        </div>
+        <div class="status-panel">
+          <span class="status-label">Modo actual</span>
+          <strong class="status-value">{% if demo_mode %}Demo local{% else %}OpenAI API{% endif %}</strong>
+          <p class="status-detail">{% if demo_mode %}Respuestas simuladas para demostracion.{% else %}Modelo: {{ model_name }}{% endif %}</p>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <form method="post" class="editor-card">
+          <div class="grid two-columns">
+            <label>
+              <span>Tipo de consulta</span>
+              <select name="issue_type">
+                {% for issue in ["soporte tecnico", "facturacion", "devolucion", "pedido", "recomendacion"] %}
+                  <option value="{{ issue }}" {% if form_data.issue_type == issue %}selected{% endif %}>{{ issue }}</option>
+                {% endfor %}
+              </select>
+            </label>
+            <label>
+              <span>Prioridad</span>
+              <select name="priority">
+                {% for priority in ["baja", "media", "alta"] %}
+                  <option value="{{ priority }}" {% if form_data.priority == priority %}selected{% endif %}>{{ priority }}</option>
+                {% endfor %}
+              </select>
+            </label>
+          </div>
+
+          <div class="grid two-columns">
+            <label>
+              <span>Nombre del cliente</span>
+              <input type="text" name="customer_name" value="{{ form_data.customer_name }}" placeholder="ej. Ana Martinez" />
+            </label>
+            <label>
+              <span>Numero de orden</span>
+              <input type="text" name="order_id" value="{{ form_data.order_id }}" placeholder="ej. ORD-2031" />
+            </label>
+          </div>
+
+          <label>
+            <span>Mensaje del cliente</span>
+            <textarea name="customer_message" rows="10" placeholder="Escribe aqui la consulta del cliente.">{{ form_data.customer_message }}</textarea>
+          </label>
+
+          <button type="submit">Generar respuesta de soporte</button>
+          {% if error %}<p class="feedback error">{{ error }}</p>{% endif %}
+        </form>
+
+        <aside class="result-card">
+          <div class="result-header">
+            <div>
+              <p class="eyebrow">Salida</p>
+              <h2>{% if result %}Respuesta al cliente{% else %}Soporte listo para mostrar{% endif %}</h2>
+            </div>
+            {% if result %}<span class="mode-pill">{{ result.mode }}</span>{% endif %}
+          </div>
+
+          {% if result %}
+            <p class="system-note">{{ result.lookup_status }}</p>
+            <pre>{{ result.content }}</pre>
+          {% else %}
+            <div class="empty-state">
+              <p>Escenarios sugeridos:</p>
+              <ul>
+                <li>Cliente reporta un problema tecnico con su cuenta.</li>
+                <li>Consulta sobre retraso en una orden.</li>
+                <li>Solicitud de devolucion.</li>
+                <li>Pregunta sobre facturacion o cobros.</li>
+              </ul>
+            </div>
+          {% endif %}
+        </aside>
+      </section>
+    </main>
+  </body>
+</html>
